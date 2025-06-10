@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About Us - Bellus Naturale{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row align-items-center">
+        <div class="col-md-6 mb-4 mb-md-0">
+            <img src="https://images.unsplash.com/photo-1616401789757-5b37cc1c7043?ixlib=rb-4.0.3&auto=format&fit=crop&w=870&q=80" 
+                 alt="About Bellus Naturale" 
+                 class="img-fluid rounded shadow">
+        </div>
+        <div class="col-md-6">
+            <h2 class="mb-3">Our Story</h2>
+            <p class="text-muted">
+                Bellus Naturale was founded with a deep passion for nature and wellness. We believe in the power of natural ingredients to nourish the skin, body, and soul.
+            </p>
+            <p class="text-muted">
+                Every product we offer is thoughtfully curated, ethically sourced, and handcrafted with love. Our mission is to bring you clean, sustainable, and effective skincare that you can trust.
+            </p>
+            <p class="text-muted">
+                Join us on this journey to rediscover beauty through nature. Because you deserve skincare that’s as pure as you are.
+            </p>
+        </div>
+    </div>
+
+    <hr class="my-5">
+
+    <div class="text-center">
+        <h3>Why Choose Bellus Naturale?</h3>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <i class="fas fa-leaf fa-2x text-success mb-2"></i>
+                <h5>100% Natural</h5>
+                <p class="text-muted">Our products are made from all-natural, chemical-free ingredients.</p>
+            </div>
+            <div class="col-md-4">
+                <i class="fas fa-globe fa-2x text-success mb-2"></i>
+                <h5>Eco-Friendly</h5>
+                <p class="text-muted">We’re committed to sustainability and environmentally conscious practices.</p>
+            </div>
+            <div class="col-md-4">
+                <i class="fas fa-heart fa-2x text-success mb-2"></i>
+                <h5>Handcrafted with Love</h5>
+                <p class="text-muted">Every product is handmade with care and attention to detail.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

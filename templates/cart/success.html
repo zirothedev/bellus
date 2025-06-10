@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment Successful - Bellus Naturale{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-icon {
+        font-size: 4rem;
+        color: #28a745;
+    }
+    .order-details {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+    .print-btn {
+        background-color: #6c757d;
+        border: none;
+    }
+    .print-btn:hover {
+        background-color: #5a6268;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Success Message -->
+            <div class="card text-center mb-4">
+                <div class="card-body py-5">
+                    <i class="fas fa-check-circle success-icon mb-3"></i>
+                    <h2 class="text-success mb-3">Payment Successful!</h2>
+                    <p class="lead">Thank you for your order. Your payment has been processed successfully.</p>
+                    <p class="text-muted">You will receive a confirmation email shortly at <strong>{{ order.email }}</strong></p>
+                </div>
+            </div>
+
+            <!-- Order Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Order Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="order-details">
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Order Number:</strong></div>
+                            <div class="col-sm-8">#{{ order.id|stringformat:"05d" }}</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Order Date:</strong></div>
+                            <div class="col-sm-8">{{ order.created_at|date:"F d, Y g:i A" }}</div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Payment Method:</strong></div>
+                            <div class="col-sm-8">Paystack (Credit/Debit Card)</div>
+                        </div>
+                        {% if order.payment_intent_id %}
+                        <div class="row mb-3">
+                            <div class="col-sm-4"><strong>Transaction ID:</strong></div>
+                            <div class="col-sm-8">{{ order.payment_intent_id }}</div>
+                        </div>
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-sm-4"><strong>Total Amount:</strong></div>
+                            <div class="col-sm-8"><strong>${{ order.total }}</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shipping Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Shipping Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="order-details">
+                        <p class="mb-1"><strong>{{ order.shipping_first_name }} {{ order.shipping_last_name }}</strong></p>
+                        <p class="mb-1">{{ order.shipping_address }}</p>
+                        {% if order.shipping_address2 %}
+                        <p class="mb-1">{{ order.shipping_address2 }}</p>
+                        {% endif %}
+                        <p class="mb-1">{{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_zip }}</p>
+                        <p class="mb-0">{{ order.shipping_country }}</p>
+                        {% if order.phone %}
+                        <p class="mb-0 mt-2"><strong>Phone:</strong> {{ order.phone }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Order Items</h5>
+                </div>
+                <div class="card-body">
+                    {% for item in order.items.all %}
+                    <div class="row align-items-center mb-3 {% if not forloop.last %}border-bottom pb-3{% endif %}">
+                        <div class="col-md-2">
+                            {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid rounded" style="max-height: 60px;">
+                            {% else %}
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i class="fas fa-image text-muted"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-1">{{ item.product.name }}</h6>
+                            <small class="text-muted">Quantity: {{ item.quantity }}</small>
+                        </div>
+                        <div class="col-md-2">
+                            <span class="text-muted">${{ item.product.price }} each</span>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <strong>${{ item.get_total }}</strong>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-8 offset-md-4">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Subtotal:</span>
+                                <span>${{ order.total }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Shipping:</span>
+                                <span>Free</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <strong>Total:</strong>
+                                <strong>${{ order.total }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center">
+                <a href="{% url 'home' %}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-home me-2"></i>Continue Shopping
+                </a>
+                <button onclick="window.print()" class="btn btn-secondary btn-lg print-btn">
+                    <i class="fas fa-print me-2"></i>Print Receipt
+                </button>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <h6 class="mb-3">What's Next?</h6>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <i class="fas fa-envelope text-primary mb-2" style="font-size: 1.5rem;"></i>
+                            <p class="mb-0"><strong>Confirmation Email</strong></p>
+                            <small class="text-muted">You'll receive an order confirmation email within 5 minutes.</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <i class="fas fa-box text-primary mb-2" style="font-size: 1.5rem;"></i>
+                            <p class="mb-0"><strong>Order Processing</strong></p>
+                            <small class="text-muted">Your order will be processed and shipped within 1-2 business days.</small>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <i class="fas fa-truck text-primary mb-2" style="font-size: 1.5rem;"></i>
+                            <p class="mb-0"><strong>Shipping Updates</strong></p>
+                            <small class="text-muted">You'll receive tracking information once your order ships.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Auto-scroll to top on page load
+    window.scrollTo(0, 0);
+    
+    // Optional: Add confetti effect or other success animations
+    // You can add celebration libraries like canvas-confetti here
+</script>
+{% endblock %}

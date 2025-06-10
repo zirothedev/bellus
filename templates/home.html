@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 mb-4">Natural Beauty, Naturally You</h1>
+                <p class="lead mb-4">Discover our premium collection of organic, cruelty-free beauty products crafted with love for your skin and the environment.</p>
+                <a href="{% url 'products:product_list' %}" class="btn btn-primary btn-lg">Shop Now</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Categories -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2>Shop by Category</h2>
+            <p class="text-muted">Explore our curated collections</p>
+        </div>
+        <div class="row">
+            {% for category in categories %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 product-card">
+                    <div class="card-body text-center">
+                        <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">{{ category.name }}</h5>
+                        <p class="card-text">{{ category.description|default:"Discover amazing products in this category" }}</p>
+                        <a href="{% url 'products:product_list' %}?category={{ category.id }}" class="btn btn-outline-primary">Browse {{ category.name }}</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2>Featured Products</h2>
+            <p class="text-muted">Our bestselling natural beauty essentials</p>
+        </div>
+        <div class="row">
+            {% for product in featured_products %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card h-100 product-card">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 250px; object-fit: cover;">
+                    {% else %}
+                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 250px;">
+                            <i class="fas fa-leaf fa-3x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text flex-grow-1">{{ product.description|truncatewords:15 }}</p>
+                        <div class="mt-auto">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h5 text-primary mb-0">₦{{ product.price }}</span>
+                                <a href="{% url 'products:product_detail' product.pk product.slug %}" class="btn btn-primary btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <a href="{% url 'products:product_list' %}" class="btn btn-primary">View All Products</a>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2>Why Choose Bellus Naturale?</h2>
+        </div>
+        <div class="row">
+            <div class="col-md-4 text-center mb-4">
+                <i class="fas fa-leaf fa-3x text-success mb-3"></i>
+                <h4>100% Natural</h4>
+                <p>All our products are made with natural, organic ingredients sourced ethically.</p>
+            </div>
+            <div class="col-md-4 text-center mb-4">
+                <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                <h4>Cruelty-Free</h4>
+                <p>We never test on animals and support cruelty-free beauty practices.</p>
+            </div>
+            <div class="col-md-4 text-center mb-4">
+                <i class="fas fa-recycle fa-3x text-info mb-3"></i>
+                <h4>Eco-Friendly</h4>
+                <p>Sustainable packaging and environmentally conscious manufacturing processes.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

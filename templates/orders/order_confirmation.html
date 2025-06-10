@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Confirmation - Bellus Naturale{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
+        <h1>Order Confirmed!</h1>
+        <p class="lead">Thank you for your purchase. Your order has been successfully processed.</p>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Order #{{ order.id }}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Shipping Information</h6>
+                            <p class="mb-1">{{ order.first_name }} {{ order.last_name }}</p>
+                            <p class="mb-1">{{ order.address }}</p>
+                            <p class="mb-1">{{ order.city }}, {{ order.state }} {{ order.zip_code }}</p>
+                            <p class="mb-1">{{ order.country }}</p>
+                            <p class="mb-1">{{ order.phone }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Order Details</h6>
+                            <p class="mb-1"><strong>Order Date:</strong> {{ order.created_at|date:"F d, Y" }}</p>
+                            <p class="mb-1"><strong>Status:</strong> <span class="badge bg-success">{{ order.get_status_display }}</span></p>
+                            <p class="mb-1"><strong>Total:</strong> ${{ order.total }}</p>
+                        </div>
+                    </div>
+                    
+                    <h6>Order Items</h6>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in order_items %}
+                                <tr>
+                                    <td>{{ item.product.name }}</td>
+                                    <td>${{ item.price }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>${{ item.get_total }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="3">Total</th>
+                                    <th>${{ order.total }}</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <p class="text-muted">You will receive an email confirmation shortly.</p>
+                        <a href="{% url 'products:product_list' %}" class="btn btn-primary">Continue Shopping</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

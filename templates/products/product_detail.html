@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.name }} - Bellus Naturale{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'products:product_list' %}">Products</a></li>
+            <li class="breadcrumb-item active">{{ product.name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+            {% else %}
+                <div class="d-flex align-items-center justify-content-center bg-light rounded" style="height: 400px;">
+                    <i class="fas fa-leaf fa-5x text-muted"></i>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-6">
+            <h1>{{ product.name }}</h1>
+            <p class="text-muted">{{ product.category.name }}</p>
+            
+            <div class="mb-3">
+                <span class="h3 text-primary">₦{{ product.price }}</span>
+            </div>
+            
+            <div class="mb-3">
+                {% if product.stock > 0 %}
+                    <span class="badge bg-success">{{ product.stock }} in stock</span>
+                {% else %}
+                    <span class="badge bg-danger">Out of stock</span>
+                {% endif %}
+            </div>
+            
+            <div class="mb-4">
+                <h5>Description</h5>
+                <p>{{ product.description }}</p>
+            </div>
+            
+            {% if product.stock > 0 %}
+                <form method="post" action="{% url 'cart:cart_add' product.id %}" class="mb-4">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-4 mb-2">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" name="quantity" value="1" min="1" max="{{ product.stock }}" id="quantity">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                    </button>
+                </form>
+            {% else %}
+                <button class="btn btn-secondary btn-lg" disabled>
+                    <i class="fas fa-times me-2"></i>Out of Stock
+                </button>
+            {% endif %}
+            
+            <div class="mt-4">
+                <h6>Product Features:</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-leaf text-success me-2"></i>100% Natural Ingredients</li>
+                    <li><i class="fas fa-heart text-danger me-2"></i>Cruelty-Free</li>
+                    <li><i class="fas fa-recycle text-info me-2"></i>Eco-Friendly Packaging</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Products -->
+    {% if related_products %}
+    <section class="mt-5">
+        <h3>Related Products</h3>
+        <div class="row">
+            {% for related_product in related_products %}
+            <div class="col-md-3 mb-4">
+                <div class="card h-100 product-card">
+                    {% if related_product.image %}
+                        <img src="{{ related_product.image.url }}" class="card-img-top" alt="{{ related_product.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 200px;">
+                            <i class="fas fa-leaf fa-2x text-muted"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h6 class="card-title">{{ related_product.name }}</h6>
+                        <p class="card-text">${{ related_product.price }}</p>
+                        <a href="{% url 'products:product_detail' related_product.pk related_product.slug %}" class="btn btn-outline-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

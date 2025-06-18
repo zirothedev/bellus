@@ -15,6 +15,7 @@ urlpatterns = [
     ), name='login'),
     
     path('logout/', auth_views.LogoutView.as_view(next_page=reverse_lazy('core:home')), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     
     path('register/', views.register_view, name='register'),
     

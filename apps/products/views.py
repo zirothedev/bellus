@@ -1,4 +1,6 @@
 from django.shortcuts import redirect, render, get_object_or_404
+# apps/products/views.py
+from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q, Avg, Count
 from .models import Product, Category
@@ -28,6 +30,32 @@ def product_list(request, category_slug=None):
     if selected_category:
         products = products.filter(category_id=selected_category)
 
+    
+    # Search functionality
+    query = request.GET.get('q')
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(ingredients__icontains=query)
+        ).distinct()
+    
+    # Filtering
+    skin_type = request.GET.get('skin_type')
+    if skin_type:
+        products = products.filter(skin_type=skin_type)
+    
+    price_range = request.GET.get('price_range')
+    if price_range:
+        if price_range == 'under_25':
+            products = products.filter(price__lt=25)
+        elif price_range == '25_50':
+            products = products.filter(price__gte=25, price__lte=50)
+        elif price_range == '50_100':
+            products = products.filter(price__gte=50, price__lte=100)
+        elif price_range == 'over_100':
+            products = products.filter(price__gt=100)
+    
     # Sorting
     sort_by = request.GET.get('sort', 'name')
     if sort_by == 'price_low':
@@ -39,6 +67,9 @@ def product_list(request, category_slug=None):
     elif sort_by == 'name':
         products = products.order_by('name')
 
+    elif sort_by == 'rating':
+        products = products.annotate(avg_rating=Avg('reviews__rating')).order_by('-avg_rating')
+    
     # Pagination
     paginator = Paginator(products, 12)  # Show 12 products per page
     page = request.GET.get('page')
@@ -57,6 +88,12 @@ def product_list(request, category_slug=None):
         'search_query': search_query,
         'sort_by': sort_by,
         'selected_category': selected_category,
+        'query': query,
+        'current_filters': {
+            'skin_type': skin_type,
+            'price_range': price_range,
+            'sort': sort_by,
+        }
     }
     
     return render(request, 'products/product_list.html', context)

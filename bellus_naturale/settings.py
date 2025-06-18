@@ -9,6 +9,7 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-producti
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['bellus.onrender.com']
 
 # Application definition
 DJANGO_APPS = [
@@ -117,6 +118,8 @@ STRIPE_PUBLISHABLE_KEY = config('pk_test_51RT1EFGg76wVayeaqg5jQDQV8O1HDMnNZUUObL
 STRIPE_SECRET_KEY = config('sk_test_51RT1EFGg76wVayeaNq2dZzQeKGkquazaTbtfjKxvcgMr3v2GDqzgWAXrvJKX9DIQgSOmgm22qEiptNC9Bby0ZOHF00V577oOWE', default='')
 PAYSTACK_PUBLIC_KEY = 'pk_test_c3aecf546bd0e42136ddb357bd0615f0d3299916'
 PAYSTACK_SECRET_KEY = 'sk_test_5cf7f727ecb6f0016e4b85b65bfbe4cdb71960d8'
+PAYSTACK_PUBLIC_KEY = 'pk_live_472d55665abc1cd0852af6cfdef2da5f0fb75dfa'
+PAYSTACK_SECRET_KEY = 'sk_live_c56dbc2651a1127184ccbdb34d10caa6df280100'
 # Email Configuration (for contact forms)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Change to SMTP in production
 EMAIL_HOST = 'smtp.gmail.com'
@@ -129,6 +132,8 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = 'core:home'
 LOGOUT_REDIRECT_URL = 'core:home'
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
 
 # Session Configuration
 CART_SESSION_ID = 'cart'
@@ -136,3 +141,7 @@ SESSION_COOKIE_AGE = 86400  # 1 day
 
 # Custom User Model (if you want to extend it later)
 # AUTH_USER_MODEL = 'accounts.CustomUser'
+# AUTH_USER_MODEL = 'accounts.CustomUser'
+CSRF_TRUSTED_ORIGINS = [
+    'https://bellus.onrender.com',
+]

@@ -25,6 +25,8 @@
                             </div>
                         {% endif %}
                         
+                    <form method="POST" action="{% url 'cart:paystack_checkout' %}">
+                        {% csrf_token %}
                         {% for field in form %}
                             <div class="mb-3">
                                 {{ field.label }}
@@ -38,6 +40,8 @@
                         {% endfor %}
                         
                         <input type="hidden" name="amount" value="{{ total }}">
+                        <input type="hidden" name="amount" value="{{ total }}">
+                        <input type="hidden" name="email" value="{{ form.email.value }}">
                         <button type="submit" class="btn btn-primary btn-lg">
                             <i class="fas fa-credit-card me-2"></i>Proceed to Payment
                         </button>

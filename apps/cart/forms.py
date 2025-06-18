@@ -11,6 +11,7 @@ class CheckoutForm(forms.Form):
         })
     )
 
+    
     last_name = forms.CharField(
         max_length=50,
         widget=forms.TextInput(attrs={
@@ -20,6 +21,7 @@ class CheckoutForm(forms.Form):
         })
     )
 
+    
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
             'class': 'form-control',
@@ -28,6 +30,7 @@ class CheckoutForm(forms.Form):
         })
     )
 
+    
     phone = forms.CharField(
         max_length=20,
         widget=forms.TextInput(attrs={
@@ -37,6 +40,7 @@ class CheckoutForm(forms.Form):
         })
     )
 
+    
     address = forms.CharField(
         max_length=255,
         widget=forms.TextInput(attrs={
@@ -46,6 +50,7 @@ class CheckoutForm(forms.Form):
         })
     )
 
+    
     city = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
@@ -55,6 +60,7 @@ class CheckoutForm(forms.Form):
         })
     )
 
+    
     state = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
@@ -64,6 +70,7 @@ class CheckoutForm(forms.Form):
         })
     )
 
+    
     zip_code = forms.CharField(
         max_length=20,
         widget=forms.TextInput(attrs={
@@ -73,6 +80,7 @@ class CheckoutForm(forms.Form):
         })
     )
 
+    
     country = forms.CharField(
         max_length=100,
         widget=forms.TextInput(attrs={
@@ -90,11 +98,20 @@ class CheckoutForm(forms.Form):
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        return email.lower() if email else email
+
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        import re
         cleaned_phone = re.sub(r'\D', '', phone)
         if len(cleaned_phone) < 10:
             raise forms.ValidationError('Please enter a valid phone number.')
         return cleaned_phone
     
+        return zip_code
 class CartAddProductForm(forms.Form):
     product_id = forms.IntegerField(widget=forms.HiddenInput)  # Hidden field for product ID
     quantity = forms.IntegerField(min_value=1, initial=1)  # Field for quantity

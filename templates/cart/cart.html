@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
+
 {% block title %}Shopping Cart - Bellus Naturale{% endblock %}
 
 {% block content %}
@@ -47,6 +48,23 @@
                         </div>
                         <div class="col-md-2 text-end">
                             <p class="mb-1 fw-bold">₦{{ item.total_price }}</p>
+                            <p class="text-success small mb-0">${{ item.price }}</p>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Quantity</label>
+                            <form method="post" action="{% url 'cart:cart_update' item.product.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <div class="input-group" style="max-width: 140px;">
+                                    {{ item.update_quantity_form.quantity }}
+                                    {{ item.update_quantity_form.override }}
+                                    <button class="btn btn-outline-primary btn-sm" type="submit">
+                                        <i class="fas fa-sync"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <p class="mb-1 fw-bold">₦{{ product.price }}</p>
                         </div>
                         <div class="col-md-1 text-end">
                             <form method="post" action="{% url 'cart:cart_remove' item.product.id %}" class="d-inline">
@@ -107,6 +125,7 @@
                     <form method="POST" action="{% url 'cart:paystack_checkout' %}">
                         {% csrf_token %}
                         <input type="hidden" name="amount" value="{{ cart.get_total_price }}">  <!-- Use the calculated total price -->
+                        <input type="hidden" name="amount" value="{{ total_price }}">  <!-- Use the calculated total price -->
                         <input type="hidden" name="email" value="{{ user.email }}">  <!-- Ensure you get the user's email -->
                         <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
                             <i class="fas fa-credit-card me-2"></i>Proceed to Paystack Payment

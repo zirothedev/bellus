@@ -62,6 +62,10 @@ def checkout(request):
             return redirect('cart:payment')  # Redirect to payment
         else:
             print(form.errors)  # Debugging line
+            return redirect('cart:payment')
+            else:
+            # Print form errors for debugging
+            print(form.errors)  # Add this line
     else:
         initial = {}
         if request.user.is_authenticated:
@@ -77,6 +81,7 @@ def checkout(request):
         'cart': cart,
         'form': form,
         'total': cart.get_total_price() * 100,  # Total in kobo
+        'total': cart.get_total_price() * 100,  # Ensure this is in kobo
     }
     return render(request, 'cart/checkout.html', context)
 
@@ -98,6 +103,7 @@ def payment(request):
         return redirect('cart:checkout')
 
     return redirect('cart:paystack_checkout')  # Use the namespace for redirect # Redirect to Paystack checkout
+    return redirect('paystack_checkout')  # Redirect to Paystack checkout
 
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -126,11 +132,25 @@ def paystack_checkout(request):
             return redirect('cart:cart_detail')
 
         # Initialize Paystack payment
+        # Get amount and email from POST data
+        amount_str = request.POST.get('amount')
+        email = request.POST.get('email')
+
+        # Remove decimal and convert to an integer (in kobo)
+        try:
+            amount = int(float(amount_str) * 100)  # Convert to kobo
+        except ValueError:
+            # Handle the error appropriately (e.g., show a message)
+            messages.error(request, "Invalid amount.")
+            return redirect('cart:cart_detail')
+
+        # Make a request to Paystack to initialize payment
         response = requests.post('https://api.paystack.co/transaction/initialize', json={
             'amount': amount,
             'email': email,
         }, headers={
             'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}',
+            'Authorization': 'Bearer sk_live_c56dbc2651a1127184ccbdb34d10caa6df280100',  # Replace with your actual secret key
             'Content-Type': 'application/json',
         })
 
@@ -139,6 +159,10 @@ def paystack_checkout(request):
         if response_data['status']:
             return redirect(response_data['data']['authorization_url'])
         else:
+            # Redirect the user to the Paystack payment page
+            return redirect(response_data['data']['authorization_url'])
+            else:
+            # Handle error
             messages.error(request, response_data['message'])
             return redirect('cart:cart_detail')
 
@@ -224,6 +248,10 @@ def cart_remove(request, product_id):
     cart = Cart(request)
     cart.remove(product_id)  # Pass product_id directly
     messages.success(request, 'Item has been removed from your cart.')
+    """Remove an item from the cart."""
+    cart = Cart(request)
+    cart.remove(product_id)
+    messages.success(request, 'Item removed from your cart.')
     return redirect('cart:cart_detail')
 
 def cart_clear(request):
@@ -258,6 +286,8 @@ def cart_update(request, product_id):
     else:
         cart.remove(product)  # Remove product if quantity is less than or equal to 0
 
+    quantity = int(request.POST.get('quantity', 1))
+    cart.update(product, quantity)
     messages.success(request, f'{product.name} quantity has been updated.')
     return redirect('cart:cart_detail')
 

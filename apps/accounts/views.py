@@ -289,3 +289,4 @@ def change_password(request):
         form = PasswordChangeForm(request.user)
     
     return render(request, 'accounts/change_password.html', {'form': form})
+    return redirect('home')  # Redirect to a desired page after logout

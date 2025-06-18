@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Bellus Naturale{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2><i class="fas fa-user-circle me-3"></i>Welcome, {{ user.first_name|default:user.username }}!</h2>
+                <p class="mb-0">Manage your profile and view your order history</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="{% url 'accounts:edit_profile' %}" class="btn btn-light">
+                    <i class="fas fa-edit me-2"></i>Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Profile Information -->
+        <div class="col-lg-4">
+            <div class="card dashboard-card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Name:</strong>
+                        <p class="mb-1">{{ user.first_name }} {{ user.last_name|default:"" }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Email:</strong>
+                        <p class="mb-1">{{ user.email }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Username:</strong>
+                        <p class="mb-1">{{ user.username }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Phone:</strong>
+                        <p class="mb-1">{{ user_profile.phone|default:"Not provided" }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Shipping Address:</strong>
+                        <p class="mb-1">{{ user_profile.shipping_address|default:"Not provided" }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Member Since:</strong>
+                        <p class="mb-1">{{ user.date_joined|date:"F Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="col-lg-8">
+            <div class="card dashboard-card">
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-shopping-bag me-2"></i>Recent Orders</h5>
+                    <a href="{% url 'accounts:order_history' %}" class="btn btn-light btn-sm">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_orders %}
+                        {% for order in recent_orders %}
+                        <div class="order-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-3">
+                                    <strong>Order #{{ order.id }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ order.created_at|date:"M d, Y" }}</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex align-items-center">
+                                        {% if order.items.first.product.image %}
+                                            <img src="{{ order.items.first.product.image.url }}" 
+                                                 alt="{{ order.items.first.product.name }}" 
+                                                 class="me-3" 
+                                                 style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                        {% endif %}
+                                        <div>
+                                            <strong>{{ order.items.first.product.name }}</strong>
+                                            {% if order.items.count > 1 %}
+                                                <br><small class="text-muted">+ {{ order.items.count|add:"-1" }} more item{{ order.items.count|add:"-1"|pluralize }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <strong>${{ order.total_amount }}</strong>
+                                    <br>
+                                    <span class="badge bg-{{ order.status|lower }}">{{ order.get_status_display|default:order.status }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No orders yet</h5>
+                            <p class="text-muted">Start shopping to see your orders here!</p>
+                            <a href="{% url 'products:product_list' %}" class="btn btn-primary">Shop Now</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card dashboard-card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-2">
+                            <a href="{% url 'products:product_list' %}" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-shopping-cart me-2"></i>Shop Products
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="{% url 'accounts:order_history' %}" class="btn btn-outline-success w-100">
+                                <i class="fas fa-history me-2"></i>View Orders
+                            </a>
+                        </div>
+                        <div class="col-md-4 mb-2">
+                            <a href="{% url 'cart:cart_detail' %}" class="btn btn-outline-warning w-100">
+                                <i class="fas fa-shopping-bag me-2"></i>View Cart
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -7,7 +7,7 @@
     <title>{% block title %}Bellus Naturale - Natural Beauty Products{% endblock %}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="static\css">
+    <!-- <link rel="stylesheet" href="{% static 'css/base.css' %}"> -->
     <style>
         :root {
             --primary-color: #2d5a27;
@@ -57,6 +57,32 @@
             background-color: #dc3545;
         }
         
+        .dashboard-card {
+            transition: transform 0.2s ease;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .order-item {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 15px;
+            margin-bottom: 15px;
+        }
+        
         footer {
             background-color: var(--primary-color);
             color: white;
@@ -104,10 +130,33 @@
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                <i class="fas fa-user"></i> {{ user.username }}
+                                 <i class="fas fa-user"></i> {{ user.username }}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'accounts:dashboard' %}">
+                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'accounts:edit_profile' %}">
+                                        <i class="fas fa-user-edit me-2"></i>Edit Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'accounts:order_history' %}">
+                                        <i class="fas fa-history me-2"></i>Order History
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form action="{% url 'accounts:logout' %}" method="POST" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                        </button>
+                                    </form>
+                                </li>
                             </ul>
                         </li>
                     {% else %}

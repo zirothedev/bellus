@@ -21,6 +21,16 @@ def cart_detail(request):
     cart = Cart(request)
     total_price = cart.get_total_price() * 100  # Total in kobo
 
+    if request.method == 'POST':
+        # Check if user is authenticated before proceeding to payment
+        if not request.user.is_authenticated:
+            print("User is not authenticated")  # Debugging line
+            messages.error(request, 'Please log in before proceeding to payment.')
+            return redirect('login')  # Ensure this is the correct URL name
+
+        # Proceed with payment process
+        return redirect('cart:payment')  # Redirect to payment view
+
     context = {
         'cart': cart,
         'total_price': total_price,  # Pass total price to the context
@@ -37,6 +47,7 @@ def checkout(request):
     if request.method == 'POST':
         form = CheckoutForm(request.POST)
         if form.is_valid():
+            # Store checkout data in session
             request.session['checkout_data'] = {
                 'first_name': form.cleaned_data['first_name'],
                 'last_name': form.cleaned_data['last_name'],
@@ -48,10 +59,9 @@ def checkout(request):
                 'zip_code': form.cleaned_data['zip_code'],
                 'country': form.cleaned_data['country'],
             }
-            return redirect('cart:payment')
+            return redirect('cart:payment')  # Redirect to payment
         else:
-            # Print form errors for debugging
-            print(form.errors)  # Add this line
+            print(form.errors)  # Debugging line
     else:
         initial = {}
         if request.user.is_authenticated:
@@ -59,13 +69,14 @@ def checkout(request):
                 'first_name': request.user.first_name,
                 'last_name': request.user.last_name,
                 'email': request.user.email,
+                'phone': '',  # Optional: Pre-fill if needed
             }
         form = CheckoutForm(initial=initial)
 
     context = {
         'cart': cart,
         'form': form,
-        'total': cart.get_total_price() * 100,  # Ensure this is in kobo
+        'total': cart.get_total_price() * 100,  # Total in kobo
     }
     return render(request, 'cart/checkout.html', context)
 
@@ -81,7 +92,12 @@ def payment(request):
         messages.error(request, 'Please complete the checkout form first.')
         return redirect('cart:checkout')
 
-    return redirect('paystack_checkout')  # Redirect to Paystack checkout
+    email = checkout_data.get('email')
+    if not email:
+        messages.error(request, 'Email is required to proceed with payment.')
+        return redirect('cart:checkout')
+
+    return redirect('cart:paystack_checkout')  # Use the namespace for redirect # Redirect to Paystack checkout
 
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -90,34 +106,39 @@ import requests
 @csrf_exempt
 def paystack_checkout(request):
     if request.method == 'POST':
-        # Get amount and email from POST data
         amount_str = request.POST.get('amount')
-        email = request.POST.get('email')
+        email = request.POST.get('email')  # Get email from POST data
 
-        # Remove decimal and convert to an integer (in kobo)
+        # Check if email is provided; if not, get it from session
+        if not email:
+            checkout_data = request.session.get('checkout_data')
+            email = checkout_data.get('email') if checkout_data else None
+        
+        if not email:
+            messages.error(request, "Email is required.")
+            return redirect('cart:checkout')
+
+        # Convert amount to kobo
         try:
-            amount = int(float(amount_str) * 100)  # Convert to kobo
+            amount = int(float(amount_str) * 100)
         except ValueError:
-            # Handle the error appropriately (e.g., show a message)
             messages.error(request, "Invalid amount.")
             return redirect('cart:cart_detail')
 
-        # Make a request to Paystack to initialize payment
+        # Initialize Paystack payment
         response = requests.post('https://api.paystack.co/transaction/initialize', json={
             'amount': amount,
             'email': email,
         }, headers={
-            'Authorization': 'Bearer sk_live_c56dbc2651a1127184ccbdb34d10caa6df280100',  # Replace with your actual secret key
+            'Authorization': f'Bearer {settings.PAYSTACK_SECRET_KEY}',
             'Content-Type': 'application/json',
         })
 
         response_data = response.json()
 
         if response_data['status']:
-            # Redirect the user to the Paystack payment page
             return redirect(response_data['data']['authorization_url'])
         else:
-            # Handle error
             messages.error(request, response_data['message'])
             return redirect('cart:cart_detail')
 
@@ -199,10 +220,10 @@ def webhook(request):
     return HttpResponse(status=200)
 
 def cart_remove(request, product_id):
-    """Remove an item from the cart."""
+    """Remove a product from the cart."""
     cart = Cart(request)
-    cart.remove(product_id)
-    messages.success(request, 'Item removed from your cart.')
+    cart.remove(product_id)  # Pass product_id directly
+    messages.success(request, 'Item has been removed from your cart.')
     return redirect('cart:cart_detail')
 
 def cart_clear(request):
@@ -225,8 +246,18 @@ def cart_update(request, product_id):
     """Update the quantity of a product in the cart."""
     cart = Cart(request)
     product = get_object_or_404(Product, id=product_id)
-    quantity = int(request.POST.get('quantity', 1))
-    cart.update(product, quantity)
+
+    # Get the quantity from POST data
+    try:
+        quantity = int(request.POST.get('quantity', '1'))  # Default to 1 if not provided
+    except ValueError:
+        quantity = 1  # Fallback to 1 if conversion fails
+
+    if quantity > 0:
+        cart.update(product, quantity)
+    else:
+        cart.remove(product)  # Remove product if quantity is less than or equal to 0
+
     messages.success(request, f'{product.name} quantity has been updated.')
     return redirect('cart:cart_detail')
 

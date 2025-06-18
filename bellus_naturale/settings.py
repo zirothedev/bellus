@@ -115,8 +115,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # Stripe Configuration
 STRIPE_PUBLISHABLE_KEY = config('pk_test_51RT1EFGg76wVayeaqg5jQDQV8O1HDMnNZUUObL8U8RKQb8mgKYMPn8DCoMQRtKVDgKqEOnWSuJrRaNNFIYBAJ6qO006RaE9mB6', default='')
 STRIPE_SECRET_KEY = config('sk_test_51RT1EFGg76wVayeaNq2dZzQeKGkquazaTbtfjKxvcgMr3v2GDqzgWAXrvJKX9DIQgSOmgm22qEiptNC9Bby0ZOHF00V577oOWE', default='')
-PAYSTACK_PUBLIC_KEY = 'pk_live_472d55665abc1cd0852af6cfdef2da5f0fb75dfa'
-PAYSTACK_SECRET_KEY = 'sk_live_c56dbc2651a1127184ccbdb34d10caa6df280100'
+PAYSTACK_PUBLIC_KEY = 'pk_test_c3aecf546bd0e42136ddb357bd0615f0d3299916'
+PAYSTACK_SECRET_KEY = 'sk_test_5cf7f727ecb6f0016e4b85b65bfbe4cdb71960d8'
 # Email Configuration (for contact forms)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Change to SMTP in production
 EMAIL_HOST = 'smtp.gmail.com'
@@ -127,8 +127,8 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 
 # Login/Logout URLs
 LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = 'home'
-LOGOUT_REDIRECT_URL = 'home'
+LOGIN_REDIRECT_URL = 'core:home'
+LOGOUT_REDIRECT_URL = 'core:home'
 
 # Session Configuration
 CART_SESSION_ID = 'cart'

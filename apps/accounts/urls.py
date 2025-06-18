@@ -5,6 +5,8 @@ from .forms import CustomAuthenticationForm
 
 app_name = 'accounts'
 
+from django.urls import reverse_lazy
+
 urlpatterns = [
     path('login/', auth_views.LoginView.as_view(
         template_name='accounts/login.html',
@@ -12,7 +14,7 @@ urlpatterns = [
         extra_context={'title': 'Login'}
     ), name='login'),
     
-    path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(next_page=reverse_lazy('core:home')), name='logout'),
     
     path('register/', views.register_view, name='register'),
     
@@ -38,4 +40,8 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(
         template_name='accounts/password_reset_complete.html'
     ), name='password_reset_complete'),
+
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('orders/', views.order_history, name='order_history'),
 ]

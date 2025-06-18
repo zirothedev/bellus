@@ -16,8 +16,15 @@
                     <h5 class="mb-0">Shipping Information</h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST" action="{% url 'cart:paystack_checkout' %}">
+                    <form method="POST" action="{% url 'cart:checkout' %}">  <!-- Change action to checkout -->
                         {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="text-danger mb-3">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+                        
                         {% for field in form %}
                             <div class="mb-3">
                                 {{ field.label }}
@@ -29,8 +36,8 @@
                                 {% endif %}
                             </div>
                         {% endfor %}
+                        
                         <input type="hidden" name="amount" value="{{ total }}">
-                        <input type="hidden" name="email" value="{{ form.email.value }}">
                         <button type="submit" class="btn btn-primary btn-lg">
                             <i class="fas fa-credit-card me-2"></i>Proceed to Payment
                         </button>

@@ -12,7 +12,7 @@
                     <h5 class="mb-0">Filters</h5>
                 </div>
                 <div class="card-body">
-                    <form method="get">
+                    <form method="get" action="{% url 'products:product_list' %}">
                         <!-- Search -->
                         <div class="mb-3">
                             <label class="form-label">Search</label>
@@ -30,19 +30,6 @@
                                     </option>
                                 {% endfor %}
                             </select>
-                        </div>
-                        
-                        <!-- Price Range -->
-                        <div class="mb-3">
-                            <label class="form-label">Price Range</label>
-                            <div class="row">
-                                <div class="col-6">
-                                    <input type="number" class="form-control" name="min_price" value="{{ min_price }}" placeholder="Min" step="0.01">
-                                </div>
-                                <div class="col-6">
-                                    <input type="number" class="form-control" name="max_price" value="{{ max_price }}" placeholder="Max" step="0.01">
-                                </div>
-                            </div>
                         </div>
                         
                         <!-- Sort -->
@@ -103,7 +90,7 @@
                     <ul class="pagination justify-content-center">
                         {% if products.has_previous %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ products.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Previous</a>
+                                <a class="page-link" href="?page={{ products.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Previous</a>
                             </li>
                         {% endif %}
                         
@@ -114,14 +101,14 @@
                                 </li>
                             {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ num }}</a>
+                                    <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">{{ num }}</a>
                                 </li>
                             {% endif %}
                         {% endfor %}
                         
                         {% if products.has_next %}
                             <li class="page-item">
-                                <a class="page-link" href="?page={{ products.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.min_price %}&min_price={{ request.GET.min_price }}{% endif %}{% if request.GET.max_price %}&max_price={{ request.GET.max_price }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Next</a>
+                                <a class="page-link" href="?page={{ products.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Next</a>
                             </li>
                         {% endif %}
                     </ul>

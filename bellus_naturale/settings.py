@@ -143,5 +143,5 @@ SESSION_COOKIE_AGE = 86400  # 1 day
 # AUTH_USER_MODEL = 'accounts.CustomUser'
 # AUTH_USER_MODEL = 'accounts.CustomUser'
 CSRF_TRUSTED_ORIGINS = [
-    'https://bellus.onrender.com',
+    'https://bellus-556p.onrender.com',
 ]

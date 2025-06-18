@@ -63,9 +63,6 @@ def checkout(request):
         else:
             print(form.errors)  # Debugging line
             return redirect('cart:payment')
-            else:
-            # Print form errors for debugging
-            print(form.errors)  # Add this line
     else:
         initial = {}
         if request.user.is_authenticated:
@@ -161,9 +158,6 @@ def paystack_checkout(request):
         else:
             # Redirect the user to the Paystack payment page
             return redirect(response_data['data']['authorization_url'])
-            else:
-            # Handle error
-            messages.error(request, response_data['message'])
             return redirect('cart:cart_detail')
 
     return redirect('cart:cart_detail')
